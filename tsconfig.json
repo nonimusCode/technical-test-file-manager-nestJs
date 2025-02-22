@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {
+"compilerOptions": {
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -17,5 +17,6 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true
-  }
+},
+"include": ["src/**/*", "test/**/*", "prettier.config.mjs"]
 }
