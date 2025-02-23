@@ -14,7 +14,7 @@ ENV CI=true
 COPY package.json package-lock.json ./
 
 RUN echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ".npmrc" && \
-    npm ci --omit=dev && \
+    npm ci  && \
     rm -f .npmrc
 
 COPY tsconfig*.json .
