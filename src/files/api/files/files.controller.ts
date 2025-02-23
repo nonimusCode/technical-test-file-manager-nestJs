@@ -23,7 +23,17 @@ import { ConfigService } from "@nestjs/config";
 import { JwtAuthGuard } from "@/auth/guards/jwt-auth.guard";
 import { Request as ExpressRequest } from "express";
 import { extname } from "path";
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from "@nestjs/swagger";
 
+@ApiTags("Files")
+@ApiBearerAuth()
 @Controller("files")
 @UseGuards(JwtAuthGuard)
 export class FilesController {
@@ -41,6 +51,10 @@ export class FilesController {
 
   @Post("upload")
   @UseInterceptors(FileInterceptor("file"))
+  @ApiOperation({ summary: "Upload a file" })
+  @ApiBody({ type: UploadFileDto })
+  @ApiResponse({ status: 201, description: "File uploaded successfully." })
+  @ApiResponse({ status: 400, description: "Invalid input or missing file." })
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadFileDto: UploadFileDto,
@@ -78,6 +92,10 @@ export class FilesController {
   }
 
   @Get(":id")
+  @ApiOperation({ summary: "Get file details" })
+  @ApiParam({ name: "id", required: true })
+  @ApiResponse({ status: 200, description: "File retrieved successfully." })
+  @ApiResponse({ status: 404, description: "File not found." })
   async getFile(@Param("id") id: string) {
     const file = await this.fileService.findFileById(id);
     if (!file) {
@@ -87,6 +105,10 @@ export class FilesController {
   }
 
   @Get("download/:id")
+  @ApiOperation({ summary: "Download a file" })
+  @ApiParam({ name: "id", required: true })
+  @ApiResponse({ status: 200, description: "File download link generated." })
+  @ApiResponse({ status: 404, description: "File not found." })
   async downloadFile(@Param("id") id: string) {
     const file = await this.fileService.findFileById(id);
 
@@ -110,6 +132,10 @@ export class FilesController {
   }
 
   @Put("update/:id")
+  @ApiOperation({ summary: "Update a file" })
+  @ApiParam({ name: "id", required: true })
+  @ApiBody({ type: UpdateFileDto })
+  @ApiResponse({ status: 200, description: "File updated successfully." })
   async updateFile(
     @Param("id") id: string,
     @Body() updateFileDto: UpdateFileDto,
@@ -118,6 +144,10 @@ export class FilesController {
   }
 
   @Delete(":id")
+  @ApiOperation({ summary: "Delete a file" })
+  @ApiParam({ name: "id", required: true })
+  @ApiResponse({ status: 200, description: "File deleted successfully." })
+  @ApiResponse({ status: 404, description: "File not found." })
   async deleteFile(@Param("id") id: string) {
     const file = await this.fileService.findFileById(id);
     if (!file) {
