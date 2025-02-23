@@ -1,21 +1,21 @@
 services:
-  my-service-production:
-    container_name: my-service-production
-    build:
-      target: production
-      context: .
-      args:
-        - PORT=${PORT:-3000}
-    ports:
-      - "${PORT:-3000}:${PORT:-3000}"
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: "512m"
-        reservations:
-          cpus: "0.25"
-          memory: "256m"
+  # my-service-production:
+  #   container_name: my-service-production
+  #   build:
+  #     target: production
+  #     context: .
+  #     args:
+  #       - PORT=${PORT:-3000}
+  #   ports:
+  #     - "${PORT:-3000}:${PORT:-3000}"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "1"
+  #         memory: "512m"
+  #       reservations:
+  #         cpus: "0.25"
+  #         memory: "256m"
 
   my-service-dev:
     container_name: my-service-dev
@@ -41,14 +41,9 @@ services:
           memory: "256m"
 
   postgres:
-    image: postgres:15
+    image: postgres:17.4
     container_name: postgres-db
     restart: unless-stopped
     env_file: .env
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
