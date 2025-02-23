@@ -12,7 +12,7 @@ import { JwtPayload } from "@/auth/interfaces/jwt-payload.interface";
 export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers.authorization;
 
@@ -26,7 +26,8 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      const payload: JwtPayload = this.jwtService.verify<JwtPayload>(token);
+      const payload: JwtPayload =
+        await this.jwtService.verifyAsync<JwtPayload>(token);
       request.user = payload;
       return true;
     } catch {
