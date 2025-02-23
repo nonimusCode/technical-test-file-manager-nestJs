@@ -3,6 +3,7 @@ import { AuthService } from "@/src/auth/application/services/auth/auth.service";
 import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { LoginDto } from "@/auth/api/dtos/login.dto";
 import { RegisterDto } from "@/auth/api/dtos/register.dto";
+import { ResetPasswordDto } from "../dtos/reset-password.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -24,5 +25,18 @@ export class AuthController {
       email: registerDto.email,
       password: registerDto.password,
     });
+  }
+
+  @Post("reset-password")
+  @ApiOperation({ summary: "Restablecer la contraseña" })
+  @ApiResponse({
+    status: 200,
+    description: "Contraseña restablecida con éxito",
+  })
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(
+      resetPasswordDto.token,
+      resetPasswordDto.password,
+    );
   }
 }
