@@ -29,12 +29,16 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
+    try {
+      const user = await this.validateUser(loginDto.email, loginDto.password);
 
-    const payload = { sub: user.id, email: user.email };
-    const token = this.jwtService.sign(payload);
+      const payload = { sub: user.id, email: user.email };
+      const token = this.jwtService.sign(payload);
 
-    return { access_token: token };
+      return { access_token: token };
+    } catch {
+      throw new UnauthorizedException("Invalid email or password");
+    }
   }
 
   async register(registerDto: RegisterDto) {
