@@ -46,7 +46,7 @@ export class FilesController {
     private readonly fileService: FileService,
   ) {
     this.bucketName = this.configService.get<string>("AWS_BUCKET_NAME", "");
-    this.bucketName = this.configService.get<string>("AWS_BASE_KEY", "");
+    this.awsBaseKey = this.configService.get<string>("AWS_BASE_KEY", "");
   }
 
   @Post("upload")
@@ -63,9 +63,14 @@ export class FilesController {
     if (!file) {
       throw new BadRequestException("File is required");
     }
-    if (!this.bucketName || this.awsBaseKey) {
+    console.log({
+      bucketName: this.bucketName,
+      awsBaseKey: this.awsBaseKey,
+    });
+    if (!this.bucketName || !this.awsBaseKey) {
       throw new BadRequestException("Invalid AWS credentials");
     }
+    console.log({ bucketName: this.bucketName });
     const { name } = uploadFileDto;
     const originalExt = extname(file.originalname);
     const finalName = name.includes(".") ? name : name + originalExt;
