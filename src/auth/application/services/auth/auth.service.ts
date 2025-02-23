@@ -97,7 +97,9 @@ export class AuthService {
       throw new NotFoundException("Usuario no encontrado.");
     }
 
-    user.password = password;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
     await this.userService.updateUser(user);
 
     await this.resetTokenService.deleteToken(token);

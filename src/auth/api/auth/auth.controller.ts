@@ -4,6 +4,7 @@ import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { LoginDto } from "@/auth/api/dtos/login.dto";
 import { RegisterDto } from "@/auth/api/dtos/register.dto";
 import { ResetPasswordDto } from "../dtos/reset-password.dto";
+import { ForgotPasswordDto } from "../dtos/forgot-password.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -25,6 +26,16 @@ export class AuthController {
       email: registerDto.email,
       password: registerDto.password,
     });
+  }
+
+  @Post("forgot-password")
+  @ApiOperation({ summary: "Solicitar restablecimiento de contraseña" })
+  @ApiResponse({
+    status: 200,
+    description: "Correo de recuperación enviado.",
+  })
+  async forgotPassword(@Body() ForgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(ForgotPasswordDto.email);
   }
 
   @Post("reset-password")
