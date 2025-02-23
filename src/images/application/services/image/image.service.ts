@@ -1,23 +1,24 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { S3 } from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import { AxiosResponse } from "axios";
+import { AwsS3Service } from "@/files/application/services/files/aws-s3.service";
 
 @Injectable()
 export class ImageService {
-  private readonly s3: S3;
   private readonly bucketName: string;
+  private readonly awsBaseKey: string;
   private readonly unsplashApiUrl = "https://api.unsplash.com";
 
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly awsS3Service: AwsS3Service,
   ) {
-    this.s3 = new S3();
     this.bucketName = this.configService.get<string>("AWS_BUCKET_NAME", "");
+    this.awsBaseKey = this.configService.get<string>("AWS_BASE_KEY", "");
 
     if (!this.bucketName) {
       throw new Error(
@@ -61,26 +62,30 @@ export class ImageService {
         }),
       );
 
+      const bucketName = this.bucketName;
+      if (!bucketName || !this.awsBaseKey) {
+        throw new InternalServerErrorException("Failed to upload image to S3.");
+      }
+
       const buffer = Buffer.from(response.data);
       const contentType: string =
         typeof response.headers["content-type"] === "string"
           ? response.headers["content-type"]
           : "image/jpeg";
-      const extension: string = contentType.split("/")[1] ?? "jpg";
-      const key = `${uuidv4()}.${extension}`;
 
-      await this.s3
-        .putObject({
-          Bucket: this.bucketName,
-          Key: key,
-          Body: buffer,
-          ContentType: contentType,
-          ACL: "public-read",
-        })
-        .promise();
+      const extension: string = contentType.split("/")[1] ?? "jpg";
+      const key = `${this.awsBaseKey}${uuidv4()}.${extension}`;
+
+      await this.awsS3Service.putObject(
+        bucketName,
+        key,
+        buffer,
+        contentType,
+        "public-read",
+      );
 
       return { url: `https://${this.bucketName}.s3.amazonaws.com/${key}` };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image to S3:", error);
       throw new InternalServerErrorException("Failed to upload image to S3.");
     }

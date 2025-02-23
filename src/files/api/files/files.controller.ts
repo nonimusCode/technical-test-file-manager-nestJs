@@ -27,11 +27,17 @@ import { extname } from "path";
 @Controller("files")
 @UseGuards(JwtAuthGuard)
 export class FilesController {
+  private readonly bucketName: string;
+  private readonly awsBaseKey: string;
+
   constructor(
     private readonly awsS3Service: AwsS3Service,
     private readonly configService: ConfigService,
     private readonly fileService: FileService,
-  ) {}
+  ) {
+    this.bucketName = this.configService.get<string>("AWS_BUCKET_NAME", "");
+    this.bucketName = this.configService.get<string>("AWS_BASE_KEY", "");
+  }
 
   @Post("upload")
   @UseInterceptors(FileInterceptor("file"))
@@ -43,15 +49,18 @@ export class FilesController {
     if (!file) {
       throw new BadRequestException("File is required");
     }
-    const bucketName = this.configService.get<string>("AWS_BUCKET_NAME");
-    if (!bucketName) {
+    if (!this.bucketName || this.awsBaseKey) {
       throw new BadRequestException("Invalid AWS credentials");
     }
     const { name } = uploadFileDto;
     const originalExt = extname(file.originalname);
     const finalName = name.includes(".") ? name : name + originalExt;
-    const key = `PruebaTecnicaJuan/${finalName}`;
-    const result = await this.awsS3Service.uploadFile(file, bucketName, key);
+    const key = `${this.awsBaseKey}/${finalName}`;
+    const result = await this.awsS3Service.uploadFile(
+      file,
+      this.bucketName,
+      key,
+    );
 
     const userId = req.user?.sub;
     if (!userId) {
@@ -85,15 +94,14 @@ export class FilesController {
       throw new NotFoundException("File not found");
     }
 
-    const bucketName = this.configService.get<string>("AWS_BUCKET_NAME");
-    if (!bucketName) {
+    if (!this.bucketName) {
       throw new InternalServerErrorException(
         "AWS bucket name is not configured",
       );
     }
 
     try {
-      const url = await this.awsS3Service.getFile(file.key, bucketName);
+      const url = await this.awsS3Service.getFile(file.key, this.bucketName);
       return { url };
     } catch (error) {
       console.error("Error downloading file from S3:", error);
@@ -116,12 +124,11 @@ export class FilesController {
       throw new NotFoundException("File not found");
     }
 
-    const bucketName = this.configService.get<string>("AWS_BUCKET_NAME");
-    if (!bucketName) {
+    if (!this.bucketName) {
       throw new BadRequestException("Missing AWS bucket name");
     }
 
-    await this.awsS3Service.deleteFile(file.key, bucketName);
+    await this.awsS3Service.deleteFile(file.key, this.bucketName);
     await this.fileService.deleteFile(id);
 
     return { message: "File deleted successfully" };

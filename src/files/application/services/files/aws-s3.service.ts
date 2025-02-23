@@ -30,6 +30,29 @@ export class AwsS3Service {
     }
   }
 
+  async putObject(
+    bucketName: string,
+    key: string,
+    buffer: Buffer,
+    contentType: string,
+    acl: string = "private",
+  ): Promise<S3.PutObjectOutput> {
+    const params: S3.PutObjectRequest = {
+      Bucket: bucketName,
+      Key: key,
+      Body: buffer,
+      ContentType: contentType,
+      ACL: acl,
+    };
+
+    try {
+      return await s3.putObject(params).promise();
+    } catch (error) {
+      console.error("Error putting object to S3:", error);
+      throw new Error("Error putting object to S3");
+    }
+  }
+
   async getFile(key: string, bucketName: string): Promise<S3.GetObjectOutput> {
     const params = {
       Bucket: bucketName,
