@@ -31,14 +31,14 @@ services:
       - "9229:9229"
     volumes:
       - ./src:/app/src
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: "512m"
-        reservations:
-          cpus: "0.25"
-          memory: "256m"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "1"
+    #       memory: "512m"
+    #     reservations:
+    #       cpus: "0.25"
+    #       memory: "256m"
 
   postgres:
     image: postgres:17.4

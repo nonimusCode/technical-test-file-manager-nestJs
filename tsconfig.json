@@ -23,10 +23,16 @@
       "@/src/*": ["src/*"],
       "@/app/*": ["src/app/*"],
       "@/auth/*": ["src/auth/*"],
+      "@/files/*": ["src/files/*"],
+      "@/images/*": ["src/images/*"],
       "@/contexts/*": ["src/contexts/*"],
       "@/shared/*": ["src/contexts/shared/*"],
       "@/tests/*": ["tests/*"]
     }
+},
+"rules": {
+  "@typescript-eslint/no-unsafe-assignment": "off",
+  "@typescript-eslint/no-unsafe-member-access": "off",
 },
 "include": ["src/**/*", "test/**/*", "prettier.config.mjs", "commitlint.config.ts" ,"jest.config.ts"]
 
