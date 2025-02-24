@@ -1,14 +1,4 @@
 services:
-  my-service-production:
-    container_name: my-service-production
-    build:
-      target: production
-      context: .
-      args:
-        - PORT=${PORT:-3000}
-    ports:
-      - "${PORT:-3000}:${PORT:-3000}"
-
   my-service-dev:
     container_name: my-service-dev
     restart: unless-stopped

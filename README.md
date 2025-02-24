@@ -49,37 +49,10 @@ cp .env.example .env
 # Editar .env con tus configuraciones
 ```
 
-## Migraciones de Base de Datos
-
-El proyecto utiliza Prisma como ORM y gestor de migraciones. Es importante entender cómo se manejan las migraciones en diferentes ambientes:
-
-### Ambiente de Desarrollo
-
-En el ambiente de desarrollo, las migraciones se ejecutan **automáticamente** al iniciar el contenedor con `docker compose up my-service-dev postgres -d --build`. Esto se maneja a través del `entrypoint.sh` que:
-
-- Ejecuta las migraciones con `prisma migrate dev`
-- Inicia el servidor en modo desarrollo
-
-### Ambiente de Producción
-
-En el ambiente de producción, las migraciones **NO** se ejecutan automáticamente por seguridad. Antes de iniciar el servicio en producción
-
-> ⚠️ **IMPORTANTE**: Siempre ejecuta y verifica las migraciones antes de desplegar a producción para evitar inconsistencias en la base de datos.
-
 3. Iniciar la aplicación:
 
 ```bash
-# Modo desarrollo
-docker compose up my-service-dev postgres -d --build
-```
-
-```bash
-# Primero, ejecutar las migraciones
-npx prisma migrate deploy
-
-# Luego, levantar el servicio
-docker compose up my-service-production postgres -d --build
-
+docker compose up -d --build
 ```
 
 ## Tecnologías y Herramientas
