@@ -29,30 +29,57 @@ Este es un proyecto técnico desarrollado por Juan Pablo Cerón, implementando u
 ## Instalación
 
 ### Requisitos Previos
+
 - Docker
 - Docker Compose
 
 ### Pasos de Instalación
+
 1. Clonar el repositorio:
+
 ```bash
 git clone <repository-url>
 cd <project-name>
 ```
 
 2. Configurar variables de entorno:
+
 ```bash
 cp .env.example .env
 # Editar .env con tus configuraciones
 ```
 
+## Migraciones de Base de Datos
+
+El proyecto utiliza Prisma como ORM y gestor de migraciones. Es importante entender cómo se manejan las migraciones en diferentes ambientes:
+
+### Ambiente de Desarrollo
+
+En el ambiente de desarrollo, las migraciones se ejecutan **automáticamente** al iniciar el contenedor con `docker compose up my-service-dev postgres -d --build`. Esto se maneja a través del `entrypoint.sh` que:
+
+- Ejecuta las migraciones con `prisma migrate dev`
+- Inicia el servidor en modo desarrollo
+
+### Ambiente de Producción
+
+En el ambiente de producción, las migraciones **NO** se ejecutan automáticamente por seguridad. Antes de iniciar el servicio en producción
+
+> ⚠️ **IMPORTANTE**: Siempre ejecuta y verifica las migraciones antes de desplegar a producción para evitar inconsistencias en la base de datos.
+
 3. Iniciar la aplicación:
 
 ```bash
 # Modo desarrollo
-docker-compose -f docker-compose.yml up -d my-service-dev
+docker compose up my-service-dev postgres -d --build
+```
 
-# Modo producción
-docker-compose -f docker-compose.yml up -d my-service-production
+```bash
+# Primero, ejecutar las migraciones
+npx prisma migrate deploy
+
+# Luego, levantar el servicio
+docker compose up my-service-production postgres -d --build
+
 ```
 
 ## Tecnologías y Herramientas
@@ -107,7 +134,7 @@ El archivo `.env.example` contiene todas las variables necesarias para el proyec
 
 El proyecto utiliza un enfoque de multi-stage build para optimizar las imágenes de Docker:
 
-- **Desarrollo**: 
+- **Desarrollo**:
 - Hot-reload habilitado
 - Volúmenes montados para desarrollo en tiempo real
 - Migraciones automáticas de base de datos
@@ -118,17 +145,78 @@ El proyecto utiliza un enfoque de multi-stage build para optimizar las imágenes
 - Configuración para mejor rendimiento
 
 Las migraciones de base de datos se ejecutan automáticamente al iniciar los contenedores, asegurando que el esquema de la base de datos esté siempre actualizado.
-Las migraciones de base de datos se ejecutan automáticamente al iniciar los contenedores, asegurando que el esquema de la base de datos esté siempre actualizado.
+
+## Arquitectura del Proyecto
+
+El proyecto implementa una Arquitectura Hexagonal,siguiendo los principios de Domain-Driven Design (DDD) y Clean Architecture.
+
+### Estructura de Carpetas
+
+```
+src/
+├── app/              # Módulo principal de la aplicación
+├── auth/             # Módulo de autenticación
+│   ├── api/          # Capa de adaptadores primarios (controladores)
+│   ├── application/  # Casos de uso y lógica de aplicación
+│   ├── domain/       # Entidades y lógica de dominio
+│   ├── interfaces/   # Puertos (interfaces y contratos)
+│   └── guards/       # Guardias de autenticación
+├── contexts/         # Contextos compartidos
+│   └── shared/       # Funcionalidades compartidas entre módulos
+├── files/            # Módulo de gestión de archivos
+│   ├── api/          # Adaptadores primarios
+│   └── application/  # Casos de uso
+└── images/           # Módulo de gestión de imágenes
+    ├── api/          # Adaptadores primarios
+    └── application/  # Casos de uso
+```
+
+### Capas de la Arquitectura
+
+1. **Dominio (Domain)**
+
+- Contiene la lógica de negocio central
+- Entidades y objetos de valor
+- Interfaces del dominio
+- Reglas de negocio
+
+2. **Aplicación (Application)**
+
+- Casos de uso
+- Servicios de aplicación
+- Orquestación de la lógica de negocio
+- DTOs y mappers
+
+3. **Adaptadores (Adapters)**
+
+- **Primarios (API)**:
+  - Controladores REST
+  - Middlewares
+  - Transformadores de entrada
+- **Secundarios**:
+  - Implementaciones de repositorios
+  - Servicios externos
+  - Adaptadores de base de datos
+
+### Patrones de Diseño Implementados
+
+- Repository Pattern
+- Dependency Injection
+- Factory Pattern
+- Command/Query Separation (CQRS)
+- Guard Pattern para autenticación
 
 ## Infrastructure y Escalabilidad
 
 ### Infraestructura Cloud
+
 - **AWS S3**: Almacenamiento de archivos escalable y seguro
 - **PostgreSQL**: Base de datos relacional robusta
 - **Docker**: Contenedorización para desarrollo y producción
 - **CI/CD**: Integración y despliegue continuo con Docker
 
 ### Prácticas de Escalabilidad
+
 - **Arquitectura Modular**: Diseño basado en módulos independientes siguiendo principios SOLID
 - **Microservicios Ready**: Estructura preparada para evolucionar a microservicios
 - **Caching**: Implementación de estrategias de caché para optimizar rendimiento
@@ -139,6 +227,7 @@ Las migraciones de base de datos se ejecutan automáticamente al iniciar los con
 - **Error Handling**: Sistema centralizado de manejo de errores
 
 ### Control de Calidad y Git Hooks
+
 El proyecto utiliza Husky para garantizar la calidad del código antes de cada commit:
 
 - **Pre-commit hooks**:
@@ -151,6 +240,7 @@ El proyecto utiliza Husky para garantizar la calidad del código antes de cada c
 - Convención de commits convencionales
 
 ### Seguridad
+
 - JWT para autenticación
 - Protección contra inyección SQL con Prisma
 - Encriptación de datos sensibles
@@ -159,6 +249,7 @@ El proyecto utiliza Husky para garantizar la calidad del código antes de cada c
 - Variables de entorno seguras
 
 ### Monitoreo y Logging
+
 - Sistema de logging estructurado
 - Métricas de rendimiento
 - Trazabilidad de operaciones
