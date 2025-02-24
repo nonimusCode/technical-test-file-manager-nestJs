@@ -22,78 +22,144 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Introducción
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este es un proyecto técnico desarrollado por Juan Pablo Cerón, implementando una API REST robusta y escalable utilizando NestJS. El proyecto demuestra las mejores prácticas en el desarrollo de aplicaciones backend, incorporando características como autenticación, manejo de archivos, documentación API y contenerización.
 
-## Project setup
+## Instalación
 
+### Requisitos Previos
+- Docker
+- Docker Compose
+
+### Pasos de Instalación
+1. Clonar el repositorio:
 ```bash
-$ npm install
+git clone <repository-url>
+cd <project-name>
 ```
 
-## Compile and run the project
-
+2. Configurar variables de entorno:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
+# Editar .env con tus configuraciones
 ```
 
-## Run tests
+3. Iniciar la aplicación:
 
 ```bash
-# unit tests
-$ npm run test
+# Modo desarrollo
+docker-compose -f docker-compose.yml up -d my-service-dev
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Modo producción
+docker-compose -f docker-compose.yml up -d my-service-production
 ```
 
-## Deployment
+## Tecnologías y Herramientas
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- **Framework Principal**: NestJS
+- **Base de Datos**: PostgreSQL
+- **ORM**: Prisma
+- **Autenticación**: JWT
+- **Almacenamiento**: AWS S3
+- **Manejo de Archivos**: Multer
+- **Documentación API**: Swagger
+- **Contenerización**: Docker y Docker Compose
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Variables de Entorno
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+El archivo `.env.example` contiene todas las variables necesarias para el proyecto. Las principales categorías incluyen:
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- **Configuración Básica**
+- NODE_ENV
+- PORT
+- API_PREFIX
 
-## Resources
+- **Base de Datos**
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+- POSTGRES_DB
+- DATABASE_URL
 
-Check out a few resources that may come in handy when working with NestJS:
+- **JWT**
+- JWT_SECRET
+- JWT_EXPIRATION_TIME
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **AWS S3**
+- AWS_BUCKET_NAME
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
+- AWS_REGION
 
-## Support
+- **Email**
+- SMTP_HOST
+- SMTP_PORT
+- SMTP_USER
+- SMTP_PASSWORD
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Unsplash**
+- UNSPLASH_ACCESS_KEY
+- UNSPLASH_SECRET_KEY
 
-## Stay in touch
+## Estructura del Proyecto
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Configuración Docker
 
-## License
+El proyecto utiliza un enfoque de multi-stage build para optimizar las imágenes de Docker:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Desarrollo**: 
+- Hot-reload habilitado
+- Volúmenes montados para desarrollo en tiempo real
+- Migraciones automáticas de base de datos
+
+- **Producción**:
+- Build optimizado
+- Dependencias de producción únicamente
+- Configuración para mejor rendimiento
+
+Las migraciones de base de datos se ejecutan automáticamente al iniciar los contenedores, asegurando que el esquema de la base de datos esté siempre actualizado.
+Las migraciones de base de datos se ejecutan automáticamente al iniciar los contenedores, asegurando que el esquema de la base de datos esté siempre actualizado.
+
+## Infrastructure y Escalabilidad
+
+### Infraestructura Cloud
+- **AWS S3**: Almacenamiento de archivos escalable y seguro
+- **PostgreSQL**: Base de datos relacional robusta
+- **Docker**: Contenedorización para desarrollo y producción
+- **CI/CD**: Integración y despliegue continuo con Docker
+
+### Prácticas de Escalabilidad
+- **Arquitectura Modular**: Diseño basado en módulos independientes siguiendo principios SOLID
+- **Microservicios Ready**: Estructura preparada para evolucionar a microservicios
+- **Caching**: Implementación de estrategias de caché para optimizar rendimiento
+- **Load Balancing**: Preparado para balanceo de carga horizontal
+- **Database Optimization**: Uso de Prisma ORM con optimización de consultas
+- **API Documentation**: Swagger/OpenAPI para documentación clara y mantenible
+- **Environment Configuration**: Gestión robusta de variables de entorno
+- **Error Handling**: Sistema centralizado de manejo de errores
+
+### Control de Calidad y Git Hooks
+El proyecto utiliza Husky para garantizar la calidad del código antes de cada commit:
+
+- **Pre-commit hooks**:
+- Lint-staged para verificar archivos modificados
+- ESLint para análisis estático de código
+- Prettier para formateo consistente
+
+- **Commit Message Control**:
+- Commitlint para asegurar mensajes de commit estandarizados
+- Convención de commits convencionales
+
+### Seguridad
+- JWT para autenticación
+- Protección contra inyección SQL con Prisma
+- Encriptación de datos sensibles
+- Validación de entrada con class-validator
+- Sanitización de archivos subidos
+- Variables de entorno seguras
+
+### Monitoreo y Logging
+- Sistema de logging estructurado
+- Métricas de rendimiento
+- Trazabilidad de operaciones
+- Monitoreo de salud del sistema

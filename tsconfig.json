@@ -23,6 +23,8 @@
       "@/src/*": ["src/*"],
       "@/app/*": ["src/app/*"],
       "@/auth/*": ["src/auth/*"],
+      "@/files/*": ["src/files/*"],
+      "@/images/*": ["src/images/*"],
       "@/contexts/*": ["src/contexts/*"],
       "@/shared/*": ["src/contexts/shared/*"],
       "@/tests/*": ["tests/*"]
